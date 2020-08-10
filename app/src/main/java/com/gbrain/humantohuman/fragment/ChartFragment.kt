@@ -1,10 +1,10 @@
 package com.gbrain.humantohuman.fragment
 
 import android.os.Bundle
-import android.os.SystemClock
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.gbrain.humantohuman.R
 import com.github.mikephil.charting.data.Entry
@@ -13,11 +13,7 @@ import com.github.mikephil.charting.data.LineDataSet
 import kotlinx.android.synthetic.main.fragment_chart.*
 
 
-/**
- * A simple [Fragment] subclass.
- * Use the [ChartFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
+
 class ChartFragment : Fragment() {
     // TODO: Rename and change types of parameters
     var isrunning = false
@@ -51,14 +47,14 @@ class ChartFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         startButton.setOnClickListener {
-            if (isrunning == false) {
-                isrunning = true
-                startButton.text = "그래프 구현중"
-                startButton.isClickable = false
-                thread = ThreadClass()
-                thread.start()
-            }
+
+            startButton.text = "그래프 구현중"
+            startButton.isClickable = false
+            thread = ThreadClass()
+            thread.start()
+
         }
+
         stopButton.setOnClickListener {
             //쓰레드를 죽인다
             //그래프를 없앤다
@@ -66,9 +62,20 @@ class ChartFragment : Fragment() {
             startButton.isClickable = true
             thread.interrupt()
 
-            initChart()
+            //initChart()
         }
 
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        thread?.interrupt()
+
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        thread?.interrupt()
     }
 
     override fun onPause() {
@@ -90,8 +97,20 @@ class ChartFragment : Fragment() {
     }
 
     inner class ThreadClass : Thread() {
+
+
         override fun run() {
-            thread?.interrupt()
+            try {
+                drawChart()
+            } catch (e : InterruptedException){
+                runOnUiThread {
+                    Toast.makeText(context, "thread interrupted", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+        }
+
+        private fun drawChart(){
             val input = Array<Double>(100,{Math.random()})
             // Entry 배열 생성
             var entries: ArrayList<Entry> = ArrayList()
@@ -104,14 +123,17 @@ class ChartFragment : Fragment() {
             // chart.xml에 배치된 lineChart에 데이터 연결
             lineChart.data = data
 
-            runOnUiThread {
-                // 그래프 생성
-                //lineChart.animateXY(1, 1)
-            }
+            //runOnUiThread {
+            //    // 데이터업데이트를 이곳에서?
+            //    //lineChart.animateXY(1, 1)
+            //}
 
             for (i in 0 until input.size){
 
-                SystemClock.sleep(10)
+                sleep(200)
+                lineChart.setVisibleXRangeMaximum(30f)
+                lineChart.setVisibleXRangeMinimum(30f)
+                lineChart.moveViewToX(data.entryCount.toFloat()) //x값에따라 차트왼쪽으로이동
                 data.addEntry(Entry(i.toFloat(), input[i].toFloat()), 0)
                 data.notifyDataChanged()
                 lineChart.notifyDataSetChanged()
@@ -120,8 +142,6 @@ class ChartFragment : Fragment() {
             //startButton.text = "난수 생성 시작"
             //startButton.isClickable = true
 
-
-            isrunning = false
         }
     }
 }
