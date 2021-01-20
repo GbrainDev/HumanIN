@@ -9,8 +9,8 @@
 
 4. Click __Tools- Manage Libraries__ and install **PubSubClient**.
 
-+ If you get an error like "Multiple libraries were found for "WiFi.h"
- Go to the path ***Not used :*** and delete the **WiFi** folder.
++ If you get an error like "Multiple libraries were found for "WiFi.h",
+ go to the path ***Not used :*** and delete the **WiFi** folder.
 
 _________________________________
 ### Code execution
