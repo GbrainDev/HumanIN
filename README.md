@@ -1,7 +1,7 @@
 # HumanToHumanInterface 
 ## Order of execution
 
-1.Copy and paste the following address in File-Preferences-Additional Board Manager URLs. https://dl.espressif.com/dl/package_esp32_index.json,http://arduino.esp8266.com/stable/package_esp8266com_index.json
+1. Copy and paste the following address in File-Preferences-Additional Board Manager URLs. https://dl.espressif.com/dl/package_esp32_index.json,http://arduino.esp8266.com/stable/package_esp8266com_index.json
 
 2. Click __Tools-Board-Board Manager__ and install 'esp32' and'esp8266'.
 
