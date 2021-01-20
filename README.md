@@ -10,11 +10,11 @@ https://dl.espressif.com/dl/package_esp32_index.json,http://arduino.esp8266.com/
 4. 파일- 환경설정을 눌러 스케치북 위치를 확인하고 libraries 폴더를 그 경로에 다운받습니다.
 
 #### 코드 실행
-__[MosquittoAFinalOther.ino 업로드]__
+__[MosquittoAFinalOther.ino]__
 1. 툴- 보드 - ESP32 Arduino - Lollin D32 Pro 
 2. 툴- Partition Scheme - Minimal SPIFFS
 
 
-__[MosquittoBFinal.ino 업로드]__
+__[MosquittoBFinal.ino]__
 1. 툴- 보드 - ESP8266 Boards - Lollin D1 mini Pro
 2. 툴- Partition Scheme - Minimal SPIFFS
