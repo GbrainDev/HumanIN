@@ -9,6 +9,8 @@
 
 4. Click __Tools- Manage Libraries__ and install **PubSubClient**.
 
+5. 스케치- 라이브러리 포함하기- zip파일 추가- 1에서 확인한 경로에 있는
+
 
 
 _________________________________
