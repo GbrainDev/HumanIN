@@ -9,9 +9,8 @@
 
 4. Click __Tools- Manage Libraries__ and install **PubSubClient**.
 
-5. 스케치- 라이브러리 포함하기- zip파일 추가- 1에서 확인한 경로에 있는
-
-
++ If you get an error like "Multiple libraries were found for "WiFi.h"
+ Go to the path ***Not used :*** and delete the **WiFi** folder.
 
 _________________________________
 ### Code execution
