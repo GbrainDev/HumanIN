@@ -1,5 +1,5 @@
 # HumanToHumanInterface 
-## Order of execution
+## Arduino Settings
 
 1. Copy and paste the following address in __File-Preferences-Additional Board Manager URLs__. https://dl.espressif.com/dl/package_esp32_index.json,http://arduino.esp8266.com/stable/package_esp8266com_index.json
 
