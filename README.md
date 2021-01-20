@@ -5,7 +5,7 @@
 
 2. Click __Tools-Board-Board Manager__ and install **esp32** and **esp8266**.
 
-3. Click __Tools- Manage__ Libraries and install**PubSubClient**.
+3. Click __Tools- Manage Libraries__ and install **PubSubClient**.
 
 4. Click __File- Preferences__ to check the sketchbook location and download the **libraries** folder to that path.
 
