@@ -7,8 +7,6 @@
 
 3. Click __Tools-Board-Board Manager__ and install **esp32** and **esp8266**.
 
-4. Click __Tools-Manage Libraries__ and install **PubSubClient**.
-
 + If you get an error like _"Multiple libraries were found for "WiFi.h"_,
  go to the path ***Not used :*** and delete the **WiFi** folder.
 
