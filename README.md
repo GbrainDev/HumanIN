@@ -1,5 +1,5 @@
 # HumanToHumanInterface 
-## Arduino Settings
+##  Arduino Settings
 
 1. Click __File-Preferences__ to check the sketchbook location and download the code and libraries to that floder.
 
@@ -11,7 +11,7 @@
  go to the path ***Not used :*** and delete the **WiFi** folder.
 
 _________________________________
-## Code execution
+##  Code execution
 
 __[MosquittoAFinalOther.ino]__
 1. Tools-Board-ESP32 Arduino-Lollin D32 Pro
