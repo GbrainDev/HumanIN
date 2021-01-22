@@ -30,7 +30,7 @@ const char* ssid = "SSID";
 const char* password = "PASSWORD";
 const char* mqtt_server = "test.mosquitto.org";
 const char* TopicID = "Gbrain";
-const char* clientName = "GbrainMain10"; // GbrainMain 1~99 겹치지 않게.
+const char* clientName = "GbrainMain3"; // GbrainMain 1~99 겹치지 않게.
 AsyncWebServer wbServer(80);
 
 typedef struct wifi_creds {
@@ -438,6 +438,8 @@ void loop() {
         }
 
         if (strcmp(s_state, "stop") == 0) {
+          MQTTOff();
+          flag = 1;
           Start = false;
           break;
         }

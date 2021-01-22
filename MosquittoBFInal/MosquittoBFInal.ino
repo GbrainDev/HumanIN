@@ -7,8 +7,8 @@ const char* apPASS = "gbrain1908";
 char ssid[20];
 char passwd[20];
 const char* mqtt_server = "test.mosquitto.org";
-char TopicID[20] = "GH13";  // 안드로이드 앱상에서 디바이스 이름 수정
-const char* clientName = "GbrainSub13";// GbrainSub 1~99 겹치지않게 수정
+char TopicID[20] = "GH7";  // 안드로이드 앱상에서 디바이스 이름 수정
+const char* clientName = "ICRecv7";// GbrainSub 1~99 겹치지않게 수정
 
 WiFiClient espClient;
 PubSubClient client(espClient);
@@ -145,6 +145,7 @@ void reconnect() {
 void loop() {
 
   if (!client.connected()) {
+    digitalWrite(BUILTIN_LED, HIGH);
     reconnect();
   }
   client.loop();
