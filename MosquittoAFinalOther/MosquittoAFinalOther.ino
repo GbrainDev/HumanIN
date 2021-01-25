@@ -31,6 +31,8 @@ const char* password = "PASSWORD";
 const char* mqtt_server = "test.mosquitto.org";
 const char* TopicID = "Gbrain";
 const char* clientName = "GbrainMain3"; // GbrainMain 1~99 겹치지 않게.
+const char* BluetoothName = "GH3";
+
 AsyncWebServer wbServer(80);
 
 typedef struct wifi_creds {
@@ -63,8 +65,7 @@ void alternateDelay(int delayMS)
   }
 }
 
-
-// broker에서 message 수신시 topic 출력, paload값 출력
+// broker에서 message 수신시 topic, payload값 출력
 void callback(char* topic, byte* payload, unsigned int length) {
   Serial.print("Message arrived [");
   Serial.print(topic);
@@ -92,18 +93,18 @@ void reconnect() {
         Serial.println(DeviceList[i]);
         client.subscribe(DeviceList[i]);
       }
-      digitalWrite(BUILTIN_LED, LOW);
+      digitalWrite(BUILTIN_LED, LOW); // LED ON
       MQTTOff();
     } else {
+      digitalWrite(BUILTIN_LED, HIGH); // LED OFF
       Serial.print("failed, rc=");
       Serial.print(client.state());
       Serial.println(" try again in 5 seconds");
-      digitalWrite(BUILTIN_LED, HIGH);
       // Wait 5 seconds before retrying
       delay(5000);
     }
   }
-}
+} 
 
 void callbackBT(esp_spp_cb_event_t event, esp_spp_cb_param_t *param) {
 
@@ -175,12 +176,6 @@ void waitClient(void)
       if (strcmp(state, "cali") == 0) break;
     }
 
-    //    if(adapter_sta_list.num > 0)
-    //    {
-    //      Serial.print("connected device : ");
-    //      Serial.println(adapter_sta_list.num);
-    //    }
-
     // Loop through connected devices
     for (int i = 0; i < adapter_sta_list.num; i++) {
       // station : connected deivce info (struct)
@@ -244,6 +239,7 @@ void SoftAPSetup(const char* ssid, const char* password, const char* TopicID)
 
 }
 
+// 입력받은 device 정보 저장
 void device_conn()
 {
   Serial.println("Waiting Device Connection...");
@@ -279,19 +275,14 @@ void parse_wifi_info(wifi_creds_t* wifi_creds) {
   Serial.print("DeviceList : ");
   Serial.println((int)DeviceNum);
 
-  //  if (DeviceNum == 0)
-  //    digitalWrite(BUILTIN_LED, LOW);
-
   for (int i = 0; i < DeviceNum ; i++)
   {
     Serial.print("Device Name: ");
     Serial.println(DeviceList[i]);
   }
-
-  //  SerialBT.print("Device Number : ");
-  //  SerialBT.println((int)DeviceNum);
 }
 
+// WiFi 정보 받아오기
 wifi_creds_t* read_wifi_creds(void) {
 
   // WiFi Credential struct
@@ -319,6 +310,7 @@ wifi_creds_t* read_wifi_creds(void) {
         {
           txt.toCharArray(wifi_creds->passwd, txt.length() + 1);
           wifiCredsRcvd = true;
+          bl_count = 0;
         }
       }
     }
@@ -329,13 +321,12 @@ wifi_creds_t* read_wifi_creds(void) {
 
   delay(2000);
 
-  // to smartphone
-  // if(SerialBT.available()){
   Serial.println("send wifi info to phone");
+  
+  // to smartphone
   SerialBT.println((char *)(wifi_creds->ssid));
   delay(50);
   SerialBT.println((char *)(wifi_creds->passwd));
-  // }
 
   return wifi_creds;
 }
@@ -350,7 +341,7 @@ void setup() {
   adc1_config_width(ADC_WIDTH_BIT_12);
 
   // Start Ble
-  SerialBT.begin("gbrain");
+  SerialBT.begin(BluetoothName);
   Serial.println("The device started, now you can pair it with bluetooth!");
   SerialBT.register_callback(callbackBT);
 
@@ -370,12 +361,13 @@ void setup() {
     Serial.print(wifi_creds->ssid);
     Serial.print(",");
     Serial.println(wifi_creds->passwd);
-    digitalWrite(BUILTIN_LED, LOW);
+    digitalWrite(BUILTIN_LED, HIGH);
   }
 
   Serial.println("WiFi Connected!");
   Serial.println(wifi_creds->ssid);
   Serial.println(wifi_creds->passwd);
+  digitalWrite(BUILTIN_LED, LOW);
 }
 
 void loop() {
@@ -400,7 +392,6 @@ void loop() {
   int MaxCount = 4;
   bool Start = true;
   char s_state[6];
-  bool thres = false;
   threshold = 80; // 기본 - 50 힘안줄때 - 20이하
 
   while (true) {
@@ -410,19 +401,19 @@ void loop() {
       Serial.println(txt);
       txt.toCharArray(s_state, txt.length() + 1);
 
+      // 입력받은 것이 숫자이면 그 값을 threshold 값으로 지정.
       for (int k = 0 ; k < strlen(s_state); k++) {
         if (!isDigit(s_state[k])) break;
-        if (k == strlen(s_state) - 1) thres = true;
+        
+        if (k == strlen(s_state) - 1){
+          threshold = atoi(s_state);
+          Serial.print("threshold : ");
+          Serial.println(threshold);
+        }
       }
 
+      // app에서 start 버튼 눌렀을 때
       if (strcmp(s_state, "start") == 0) Start = true;
-
-      else if (thres) {
-        threshold = atoi(s_state);
-        Serial.print("threshold : ");
-        Serial.println(threshold);
-        thres = false;
-      }
     }
 
     while (Start) {
@@ -434,25 +425,24 @@ void loop() {
 
         for (int k = 0 ; k < strlen(s_state); k++) {
           if (!isDigit(s_state[k])) break;
-          if (k == strlen(s_state) - 1) thres = true;
+          
+          if (k == strlen(s_state) - 1){
+            threshold = atoi(s_state);
+            Serial.print("threshold : ");
+            Serial.println(threshold);
+          }
         }
 
+        // stop 버튼 눌렀을 때
         if (strcmp(s_state, "stop") == 0) {
           MQTTOff();
           flag = 1;
           Start = false;
           break;
         }
-        else if (thres) {
-          threshold = atoi(s_state);
-          Serial.print("threshold : ");
-          Serial.println(threshold);
-          thres = false;
-        }
       }
 
       if (!client.connected()) {
-        digitalWrite(BUILTIN_LED, HIGH);
         Serial.println("reconnect");
         reconnect();
       }

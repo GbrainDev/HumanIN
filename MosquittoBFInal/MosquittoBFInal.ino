@@ -7,8 +7,8 @@ const char* apPASS = "gbrain1908";
 char ssid[20];
 char passwd[20];
 const char* mqtt_server = "test.mosquitto.org";
-char TopicID[20] = "GH7";  // 안드로이드 앱상에서 디바이스 이름 수정
-const char* clientName = "ICRecv7";// GbrainSub 1~99 겹치지않게 수정
+char TopicID[20] = "GH8";  // 안드로이드 앱상에서 디바이스 이름 수정
+const char* clientName = "ICRecv8";// GbrainSub 1~99 겹치지않게 수정
 
 WiFiClient espClient;
 PubSubClient client(espClient);
@@ -42,7 +42,6 @@ void setup_wifi() {
     delay(500);
     Serial.print(".");
   }
-  Serial.println("wifi first");
   
   http.begin("http://192.168.9.9/propogate");
   int httpResponseCode = http.GET();
@@ -77,12 +76,12 @@ void setup_wifi() {
   WiFi.disconnect();
   WiFi.begin(ssid, passwd);
 
-  Serial.println("wifi Second");
-  
+  // 연결 될 때까지 LED 깜빡임.
+  // 연결되면 ON 상태 유지
   while (WiFi.status() != WL_CONNECTED) {
-    digitalWrite(BUILTIN_LED, LOW);
-    delay(250);
     digitalWrite(BUILTIN_LED, HIGH);
+    delay(250);
+    digitalWrite(BUILTIN_LED, LOW);
     delay(250);
     Serial.print(".");
   }
@@ -130,9 +129,9 @@ void reconnect() {
       //client.publish("Gbrain", "Reconnected");
       // ... and resubscribe
       client.subscribe(TopicID);
-      digitalWrite(BUILTIN_LED, LOW);
+      digitalWrite(BUILTIN_LED, LOW); //LED ON
     } else {
-      digitalWrite(BUILTIN_LED, HIGH);
+      digitalWrite(BUILTIN_LED, HIGH); //LED OFF
       Serial.print("failed, rc=");
       Serial.print(client.state());
       Serial.println(" try again in 5 seconds");
@@ -145,7 +144,6 @@ void reconnect() {
 void loop() {
 
   if (!client.connected()) {
-    digitalWrite(BUILTIN_LED, HIGH);
     reconnect();
   }
   client.loop();
