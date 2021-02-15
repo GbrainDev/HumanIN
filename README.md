@@ -14,9 +14,9 @@
 _________________________________
 ##  Code execution
 
-__[MosquittoAFinalOther.ino]__
+__[HumanIN_Sender.ino]__
 1. Tools-Board-ESP32 Arduino-Lollin D32 Pro
 2. Tools-Partition Scheme-Minimal SPIFFS
 
-__[MosquittoBFinal.ino]__
+__[HumanIN_Receiver.ino]__
 1. Tools-Boards-ESP8266 Boards-Lollin D1 mini Pro
