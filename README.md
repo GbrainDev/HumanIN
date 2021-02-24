@@ -1,4 +1,4 @@
-# HumanToHumanInterface 
+# HumanIN
 ##  Arduino Settings
 
 1. Click __File-Preferences__ to check the sketchbook location and download the code and libraries to that floder.
