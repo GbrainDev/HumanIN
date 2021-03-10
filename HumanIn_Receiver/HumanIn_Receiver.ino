@@ -39,7 +39,10 @@ void setup_wifi() {
   WiFi.begin(apSSID, apPASS);
   
   while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
+    digitalWrite(BUILTIN_LED, HIGH);
+    delay(250);
+    digitalWrite(BUILTIN_LED, LOW);
+    delay(250);
     Serial.print(".");
   }
   
