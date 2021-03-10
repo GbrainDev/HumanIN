@@ -30,8 +30,8 @@ const char* ssid = "SSID";
 const char* password = "PASSWORD";
 const char* mqtt_server = "test.mosquitto.org";
 const char* TopicID = "Gbrain";
-const char* clientName = "HCSend10"; // GbrainMain 1~99 겹치지 않게.
-const char* BluetoothName = "HC10";
+const char* clientName = "GHSend9"; // GbrainMain 1~99 겹치지 않게.
+const char* BluetoothName = "GH9";
 
 AsyncWebServer wbServer(80);
 
@@ -56,6 +56,8 @@ WiFiClient espClient;
 PubSubClient client(espClient);
 
 BluetoothSerial SerialBT;
+
+void MQTTOff();
 
 void alternateDelay(int delayMS)
 {
@@ -104,7 +106,7 @@ void reconnect() {
       delay(5000);
     }
   }
-} 
+}
 
 void callbackBT(esp_spp_cb_event_t event, esp_spp_cb_param_t *param) {
 
@@ -250,15 +252,21 @@ void device_conn()
     if (SerialBT.available())
     {
       String txt = SerialBT.readString();
-      txt.toCharArray(DeviceList[DeviceNum], txt.length() + 1);
-      Serial.println(DeviceList[DeviceNum]);
-
-      if (strcmp(DeviceList[DeviceNum], "end") == 0)
+      Serial.print("Device Recv : ");
+      Serial.println(txt);
+      int Index = 0;
+      while (true)
       {
-        deviceRcvd = true;
-        break;
+        Index = txt.indexOf(",");
+        txt.toCharArray(DeviceList[DeviceNum], Index + 1);
+        txt = txt.substring(Index + 1);
+        DeviceNum++;
+        if (txt.equals("end"))
+        {
+          deviceRcvd = true;
+          break;
+        }
       }
-      DeviceNum++;
     }
   }
 }
@@ -294,27 +302,21 @@ wifi_creds_t* read_wifi_creds(void) {
 
   while (!wifiCredsRcvd)
   {
+    int Index = 0;
     if (SerialBT.available())
     {
       String txt = SerialBT.readString();
+      Serial.print("WiFi Recv : ");
       Serial.println(txt);
 
-      if (sizeof(txt) > 2)
-      {
-        if (bl_count == 0)
-        {
-          txt.toCharArray(wifi_creds->ssid, txt.length() + 1);
-          bl_count = 1;
-        }
-        else if (bl_count == 1)
-        {
-          txt.toCharArray(wifi_creds->passwd, txt.length() + 1);
-          wifiCredsRcvd = true;
-          bl_count = 0;
-        }
-      }
+      Index = txt.indexOf(",");
+      txt.toCharArray(wifi_creds->ssid, Index + 1);
+      txt = txt.substring(Index + 1);
+      txt.toCharArray(wifi_creds->passwd, txt.length() + 1);
+      wifiCredsRcvd = true;
+      delay(1000);
     }
-    delay(50);
+    delay(500);
   }
 
   parse_wifi_info(wifi_creds);
@@ -322,7 +324,7 @@ wifi_creds_t* read_wifi_creds(void) {
   delay(2000);
 
   Serial.println("send wifi info to phone");
-  
+
   // to smartphone
   SerialBT.println((char *)(wifi_creds->ssid));
   delay(50);
@@ -404,8 +406,8 @@ void loop() {
       // 입력받은 것이 숫자이면 그 값을 threshold 값으로 지정.
       for (int k = 0 ; k < strlen(s_state); k++) {
         if (!isDigit(s_state[k])) break;
-        
-        if (k == strlen(s_state) - 1){
+
+        if (k == strlen(s_state) - 1) {
           threshold = atoi(s_state);
           Serial.print("threshold : ");
           Serial.println(threshold);
@@ -425,8 +427,8 @@ void loop() {
 
         for (int k = 0 ; k < strlen(s_state); k++) {
           if (!isDigit(s_state[k])) break;
-          
-          if (k == strlen(s_state) - 1){
+
+          if (k == strlen(s_state) - 1) {
             threshold = atoi(s_state);
             Serial.print("threshold : ");
             Serial.println(threshold);
@@ -456,7 +458,7 @@ void loop() {
         delayMicroseconds(1900 * 3);
       }
 
-      if (valSave > 1000){
+      if (valSave > 1000) {
         if (flag == 0) {
           MQTTOff();
           flag = 1;
@@ -473,11 +475,11 @@ void loop() {
         delay(40);
       }
 
-      if (valSave > threshold && OnCount <= MaxCount){
+      if (valSave > threshold && OnCount <= MaxCount) {
         OnCount++;
         OffCount = 0;
         continue;
-      }else if (valSave < threshold && OffCount <= MaxCount){
+      } else if (valSave < threshold && OffCount <= MaxCount) {
         OffCount++; // 끌 때
         OnCount = 0;
         continue;
@@ -487,7 +489,7 @@ void loop() {
         MQTTOn();
         flag = 0; // 릴레이 state
         OnCount = 0;
-      }else if (valSave < threshold && flag == 0 && OffCount > MaxCount) {
+      } else if (valSave < threshold && flag == 0 && OffCount > MaxCount) {
         MQTTOff();
         flag = 1;
         OffCount = 0;
