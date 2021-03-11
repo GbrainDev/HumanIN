@@ -257,15 +257,16 @@ void device_conn()
       int Index = 0;
       while (true)
       {
-        Index = txt.indexOf(",");
-        txt.toCharArray(DeviceList[DeviceNum], Index + 1);
-        txt = txt.substring(Index + 1);
-        DeviceNum++;
         if (txt.equals("end"))
         {
           deviceRcvd = true;
           break;
         }
+        Index = txt.indexOf(",");
+        txt.toCharArray(DeviceList[DeviceNum], Index + 1);
+        txt = txt.substring(Index + 1);
+        DeviceNum++;
+        
       }
     }
   }
